@@ -267,16 +267,22 @@ const validation = {
  * @returns  {boolean} price is correct
  */
 function isPriceCorrect(comparable) {
-  const wfItem = comparable.wfItem;
-  const fxItem = comparable.fxItem;
-  if (
-    !fxItem // an item with no matched item is not to be checked
-    || customOptions().skip.price.indexOf(iGet(wfItem, getCustomKey('code'))) >=0 //  items with price set to be skipped are not to be checked
-  ) {
-    return true;
-  } else {
-    return parseFloat(fxItem.price) === parseFloat(iGet(wfItem, getCustomKey('price')));
-  }
+const wfItem = comparable.wfItem;
+const fxItem = comparable.fxItem;
+if (
+!fxItem // an item with no matched item is not to be checked
+|| customOptions().skip.price.indexOf(iGet(wfItem, getCustomKey('code'))) >=0 //  items with price set to be skipped are not to be checked
+) {
+return true;
+} else {
+const prices = ['retail-price', 'bronze-price', 'silver-price', 'gold-price', 'platinum-price'];
+for (const price of prices) {
+if (parseFloat(fxItem.price) === parseFloat(iGet(wfItem, getCustomKey(price)))) {
+return true;
+}
+}
+return false;
+}
 }
 
 /**
