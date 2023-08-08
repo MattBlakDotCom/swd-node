@@ -513,3 +513,72 @@ module.exports = {
   getCustomizableOption,
   setApi
 }
+
+const datastoreIntegrationWebflow = require("datastore-integration-webflow");
+
+const retailPrice = process.env.RETAIL_PRICE;
+const bronzePrice = process.env.BRONZE_PRICE;
+const silverPrice = process.env.SILVER_PRICE;
+const goldPrice = process.env.GOLD_PRICE;
+const platinumPrice = process.env.PLATINUM_PRICE;
+
+exports.handler = async (event, context) => {
+  // Get the Foxy pre-payment webhook URL from the event.
+  const webhookUrl = event.headers["X-Foxy-Prepayment-Webhook-Url"];
+
+  // Check the product price and inventory.
+  const products = await datastoreIntegrationWebflow.getProducts();
+  for (const product of products) {
+    const price = event.body.price;
+
+    // Check the price against the environment variables.
+    if (price === retailPrice) {
+      if (product.price !== retailPrice) {
+        return {
+          success: false,
+          message: "Product price is incorrect",
+        };
+      }
+    } else if (price === bronzePrice) {
+      if (product.price !== bronzePrice) {
+        return {
+          success: false,
+          message: "Product price is incorrect",
+        };
+      }
+    } else if (price === silverPrice) {
+      if (product.price !== silverPrice) {
+        return {
+          success: false,
+          message: "Product price is incorrect",
+        };
+      }
+    } else if (price === goldPrice) {
+      if (product.price !== goldPrice) {
+        return {
+          success: false,
+          message: "Product price is incorrect",
+        };
+      }
+    } else if (price === platinumPrice) {
+      if (product.price !== platinumPrice) {
+        return {
+          success: false,
+          message: "Product price is incorrect",
+        };
+      }
+    }
+
+    if (product.quantity <= event.body.quantity) {
+      return {
+        success: false,
+        message: "Insufficient inventory",
+      };
+    }
+  }
+
+  // Return a success response.
+  return {
+    success: true,
+  };
+};
